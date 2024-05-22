@@ -1,4 +1,3 @@
-import 'package:chatify/chat/presentation/pages/mobile_chat_room_page.dart';
 import 'package:chatify/chat/presentation/pages/web_chat_room_page.dart';
 import 'package:chatify/chat/presentation/widgets/chat_list.dart';
 import 'package:chatify/chat/presentation/widgets/web_chat_app_bar.dart';

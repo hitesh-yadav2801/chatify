@@ -15,6 +15,14 @@ class UserModel extends User {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+    };
+  }
+
   UserModel copyWith({
     String? id,
     String? name,

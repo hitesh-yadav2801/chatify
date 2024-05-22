@@ -1,15 +1,21 @@
+import 'package:chatify/auth/presentation/blocs/auth_bloc.dart';
+import 'package:chatify/auth/presentation/pages/login_page.dart';
+import 'package:chatify/chat/presentation/pages/add_friend_page.dart';
 import 'package:chatify/chat/presentation/pages/mobile_chat_page.dart';
+import 'package:chatify/core/common/widgets/loader.dart';
 import 'package:chatify/core/theme/style.dart';
+import 'package:chatify/core/utils/show_snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class MobileHomePage extends StatefulWidget {
+  const MobileHomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<MobileHomePage> createState() => _MobileHomePageState();
 }
 
-class _HomePageState extends State<HomePage>
+class _MobileHomePageState extends State<MobileHomePage>
     with SingleTickerProviderStateMixin {
   TabController? _tabController;
   int _currentTabIndex = 0;
@@ -33,86 +39,105 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        title: const Text(
-          "Chatify",
-          style: TextStyle(
-            color: greyColor,
-            fontWeight: FontWeight.w600,
-            fontSize: 25,
-          ),
-        ),
-        actions: const [
-          Row(
-            children: [
-              Icon(
-                Icons.camera_alt_outlined,
+    return BlocConsumer<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthFailureState) {
+          showSnackBar(context, state.message);
+        } else if (state is AuthLogoutSuccessState) {
+          Navigator.pushAndRemoveUntil(context, LoginPage.route(), (route) => false);
+        }
+      },
+      builder: (context, state) {
+        if (state is AuthLoadingState) {
+          return const Loader();
+        }
+        return Scaffold(
+          appBar: AppBar(
+            centerTitle: false,
+            title: const Text(
+              "Chatify",
+              style: TextStyle(
                 color: greyColor,
-                size: 28,
+                fontWeight: FontWeight.w600,
+                fontSize: 25,
               ),
-              SizedBox(width: 25),
-              Icon(
-                Icons.search,
-                color: greyColor,
-                size: 28,
-              ),
-              SizedBox(width: 10),
-              Icon(
-                Icons.more_vert,
-                color: greyColor,
-                size: 28,
+            ),
+            actions: [
+              Row(
+                children: [
+                  const Icon(
+                    Icons.camera_alt_outlined,
+                    color: greyColor,
+                    size: 28,
+                  ),
+                  const SizedBox(width: 25),
+                  const Icon(
+                    Icons.more_vert,
+                    color: greyColor,
+                    size: 28,
+                  ),
+                  const SizedBox(width: 10),
+                  IconButton(
+                    onPressed: () {
+                      context.read<AuthBloc>().add(AuthLogoutEvent());
+                    },
+                    icon: const Icon(
+                      Icons.logout,
+                      color: greyColor,
+                      size: 28,
+                    ),
+                  )
+                ],
               ),
             ],
+            bottom: TabBar(
+              controller: _tabController,
+              labelColor: tabColor,
+              unselectedLabelColor: greyColor,
+              indicatorColor: tabColor,
+              tabs: const [
+                Tab(
+                  child: Text(
+                    'Chats',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                Tab(
+                  child: Text(
+                    'Status',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                Tab(
+                  child: Text(
+                    'Calls',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ],
-        bottom: TabBar(
-          controller: _tabController,
-          labelColor: tabColor,
-          unselectedLabelColor: greyColor,
-          indicatorColor: tabColor,
-          tabs: const [
-            Tab(
-              child: Text(
-                'Chats',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-            Tab(
-              child: Text(
-                'Status',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-            Tab(
-              child: Text(
-                'Calls',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton:
+          floatingActionButton:
           switchFloatingActionButtonOnTabIndex(_currentTabIndex),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          MobileChatPage(),
-          Container(),
-          Container(),
-        ],
-      ),
+          body: TabBarView(
+            controller: _tabController,
+            children: [
+              const MobileChatPage(),
+              Container(),
+              Container(),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -124,10 +149,12 @@ class _HomePageState extends State<HomePage>
           width: 65,
           child: FloatingActionButton(
             backgroundColor: tabColor,
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(context, AddFriendPage.route());
+            },
             shape: const CircleBorder(),
             child: const Icon(
-              Icons.message,
+              Icons.add,
               color: Colors.white,
             ),
           ),

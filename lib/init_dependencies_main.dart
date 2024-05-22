@@ -4,13 +4,13 @@ final serviceLocator = GetIt.instance;
 
 Future<void> initDependencies() async {
   _initAuth();
+  _initChat();
   final supabase = await Supabase.initialize(
     url: AppSecrets.supabaseUrl,
     anonKey: AppSecrets.supabaseAnonKey,
   );
 
   //Hive.defaultDirectory = (await getApplicationDocumentsDirectory()).path;
-
 
   serviceLocator.registerLazySingleton(() => supabase.client);
   serviceLocator.registerFactory(() => InternetConnection());
@@ -19,10 +19,50 @@ Future<void> initDependencies() async {
   serviceLocator.registerLazySingleton(() => AppUserCubit());
 
   serviceLocator.registerFactory<ConnectionChecker>(
-        () => ConnectionCheckerImpl(
+    () => ConnectionCheckerImpl(
       serviceLocator(),
     ),
   );
+}
+
+void _initChat() {
+  // This is Data Source
+  serviceLocator
+    ..registerFactory<ChatRemoteDataSource>(
+      () => ChatRemoteDataSourceImpl(
+        serviceLocator(),
+      ),
+    )
+    // This is repository
+    ..registerFactory<ChatRepository>(
+      () => ChatRepositoryImpl(
+        serviceLocator(),
+      ),
+    )
+    // This is use case
+    ..registerFactory(
+      () => CreateChatRoom(
+        serviceLocator(),
+      ),
+    )
+    // This is use case
+    ..registerFactory(
+      () => GetMyFriends(
+        serviceLocator(),
+      ),
+    )
+    // This is Bloc
+    ..registerLazySingleton(
+      () => MyFriendsBloc(
+        getMyFriends: serviceLocator(),
+      ),
+    )
+    // Bloc
+    ..registerLazySingleton(
+      () => ChatRoomBloc(
+        createChatRoom: serviceLocator(),
+      ),
+    );
 }
 
 void _initAuth() {
@@ -32,43 +72,43 @@ void _initAuth() {
   // This is Data Source
   serviceLocator
     ..registerFactory<AuthRemoteDataSource>(
-          () => AuthRemoteDataSourceImpl(
+      () => AuthRemoteDataSourceImpl(
         serviceLocator(),
       ),
     )
-  // This is repository
+    // This is repository
     ..registerFactory<AuthRepository>(
-          () => AuthRepositoryImpl(
+      () => AuthRepositoryImpl(
         serviceLocator(),
         serviceLocator(),
       ),
     )
-  // This is use case
+    // This is use case
     ..registerFactory(
-          () => UserSignUp(
+      () => UserSignUp(
         serviceLocator(),
       ),
     )
-  // This is use case
+    // This is use case
     ..registerFactory(
-          () => UserLogin(
+      () => UserLogin(
         serviceLocator(),
       ),
     )
-  // This is use case
+    // This is use case
     ..registerFactory(
-          () => CurrentUser(
+      () => CurrentUser(
         serviceLocator(),
       ),
     )
     ..registerFactory(
-          () => UserSignOut(
+      () => UserSignOut(
         serviceLocator(),
       ),
     )
-  // This is Bloc
+    // This is Bloc
     ..registerLazySingleton(
-          () => AuthBloc(
+      () => AuthBloc(
         userSignUp: serviceLocator(),
         userLogin: serviceLocator(),
         currentUser: serviceLocator(),

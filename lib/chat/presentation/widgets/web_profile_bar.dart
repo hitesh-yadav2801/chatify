@@ -1,5 +1,7 @@
+import 'package:chatify/auth/presentation/blocs/auth_bloc.dart';
 import 'package:chatify/core/theme/style.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class WebProfileBar extends StatelessWidget {
   const WebProfileBar({super.key});
@@ -34,6 +36,15 @@ class WebProfileBar extends StatelessWidget {
               onPressed: () {},
               icon: const Icon(
                 Icons.more_vert,
+                color: Colors.grey,
+              ),
+            ),
+            IconButton(
+              onPressed: () {
+                context.read<AuthBloc>().add(AuthLogoutEvent());
+              },
+              icon: const Icon(
+                Icons.logout,
                 color: Colors.grey,
               ),
             ),

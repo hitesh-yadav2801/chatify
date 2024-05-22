@@ -83,7 +83,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       if (currentUserSession != null) {
         final userData = await supabaseClient
-            .from('profiles')
+            .from('users')
             .select()
             .eq('id', currentUserSession!.user.id);
         return UserModel.fromJson(userData.first).copyWith(

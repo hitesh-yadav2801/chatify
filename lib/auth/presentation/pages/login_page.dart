@@ -36,7 +36,7 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
-          if (state is AuthFailureState) {
+          if (state is AuthFailureState && state.message != "User is not logged in!") {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
@@ -45,7 +45,7 @@ class _LoginPageState extends State<LoginPage> {
           } else if (state is AuthSuccessState) {
             Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (context) => const HomePage()),
+                MaterialPageRoute(builder: (context) => const MobileHomePage()),
                 (route) => false);
           }
         },

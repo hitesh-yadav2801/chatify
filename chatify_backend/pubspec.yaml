@@ -8,8 +8,14 @@ environment:
 
 dependencies:
   dart_frog: ^1.0.0
+  supabase: ^2.1.2
+  dart_frog_web_socket: ^1.0.0
+  envied: ^0.5.4+1
+  equatable: ^2.0.5
+  http: ^1.2.1
 
 dev_dependencies:
   mocktail: ^1.0.0
   test: ^1.19.2
-  very_good_analysis: ^5.1.0
+  build_runner: ^2.4.9
+  envied_generator: ^0.5.4+1
